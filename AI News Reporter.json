@@ -1,0 +1,328 @@
+{
+  "name": "AI News Reporter",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "Muqadasrehman59@gmail.com",
+        "subject": "Daily AI News📰🗞️",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1648,
+        560
+      ],
+      "id": "fa64531e-d49a-44ba-842f-d2e2daa6e03f",
+      "name": "Send a message",
+      "webhookId": "9959c5d5-1ff1-4aec-a817-09b077382540",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "yzL4uuhYsVe1i5c4",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"Act as a professional Tech Editor. I am providing you with multiple news items from different sources. Your task is to pick the Top 3 most important stories and create a clean, simple English email newsletter using HTML tags.\n\nInstructions for the Output: • Start with: <b>Hi there,</b><br><br> • Then write: Here is your daily AI & Tech update for today:<br><br>\n\nFor each of the Top 3 stories, use this format: • Title Heading: <b> [Insert Title Here]</b><br> • Summary: A simple 2-line summary in easy English. • Space: <br>\n\nThen, add a section for Key Highlights: • Sub-heading: <b>Key Highlights:</b><br> • Bullet Points: Pick 3-4 overall important points from all news. Format: 👉 <b>• [Point Title]:</b> Short explanation.<br><br>\n\n• Closing: End with Best Regards,<br><b>Your AI News Bot</b>\n\nImportant: Do NOT use <h3> tags to avoid extra spaces. Do NOT use > symbols. Keep it tight and professional.\n\nNews Source Data:{{ $json.text }} \" (Note: Is last line mein variable wahi dalna jo aapke Aggregate node se nikal raha ho).",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1312,
+        560
+      ],
+      "id": "be3a9970-0533-4362-a837-62079210e342",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        736
+      ],
+      "id": "b7525683-b162-4fcd-ad6f-3ce8e87b6611",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "mDjiQ2yxYxqM60z4",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        560,
+        544
+      ],
+      "id": "8def413e-857b-495d-8538-3a1416bc85aa",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"I will give you a list of 10-15 news headlines. Your job is to pick the TOP 3 most important news related to AI and Innovation. Ignore small updates. Just give me the titles of the top 3.\"{{ $json.title }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        960,
+        560
+      ],
+      "id": "fe5bcb4a-dfdd-4c50-8a92-65a4422c32fa",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        960,
+        720
+      ],
+      "id": "0f2dd51a-bb4d-400d-a1e1-a5392d3e5e74",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "mDjiQ2yxYxqM60z4",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "title"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        736,
+        560
+      ],
+      "id": "4b5e1525-91e2-446d-bd34-c3650817a29d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "url": "https://www.theverge.com/rss/index.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        400
+      ],
+      "id": "f9185ef3-9e09-46ca-bc89-c6df41cb9a18",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        560
+      ],
+      "id": "41e9db89-b0d7-45c3-bd75-6c60e63d34c1",
+      "name": "RSS Read1"
+    },
+    {
+      "parameters": {
+        "url": "https://www.wired.com/feed/rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        720
+      ],
+      "id": "1699f4d5-18b9-4305-835f-dabbad7f0d99",
+      "name": "RSS Read2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        144,
+        560
+      ],
+      "id": "37e77cb3-11bc-4adf-89eb-ccdb1e08a424",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "RSS Read2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "933704b3-eba3-437d-acb1-baddec8925e3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76a0f0894da87243492647f316903384dc5400f4938230101270cf4f47411b62"
+  },
+  "id": "phSTsgAre2t_HqS5VwoWU",
+  "tags": []
+}
